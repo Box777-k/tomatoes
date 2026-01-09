@@ -76,19 +76,24 @@
 
 ### 4. Pydantic Schemas
 
-**Схемы ТРЕБУЮТ префикса контекста**, так как в одном модуле могут быть операционные и бухгалтерские сущности:
+**Схемы ТРЕБУЮТ префикса контекста И названия модуля** для уникальности и явности:
+
+**Формат:** `{Context}{Module}{Entity}{Action}`
 
 **Операционный уровень:**
-- Префикс: `Operational`
-- Примеры:
-  - `OperationalAccountCreate`, `OperationalAccountUpdate`, `OperationalAccountResponse`
-  - `OperationalTransactionCreate`, `OperationalTransactionResponse`
+- Префикс: `Operational{Module}`
+- Примеры для Finance модуля:
+  - `OperationalFinanceAccountCreate`, `OperationalFinanceAccountUpdate`, `OperationalFinanceAccountResponse`
+  - `OperationalFinanceTransactionCreate`, `OperationalFinanceTransactionResponse`
+  - `OperationalTransactionCategoryCreate` (Category специфична для Finance, модуль опционален)
 
 **Бухгалтерский уровень:**
-- Префикс: `Accounting`
-- Примеры:
-  - `AccountingAccountCreate`, `AccountingAccountUpdate`, `AccountingAccountResponse`
-  - `AccountingEntryCreate`, `AccountingEntryResponse`
+- Префикс: `Accounting{Module}`
+- Примеры для Finance модуля:
+  - `AccountingFinanceAccountCreate`, `AccountingFinanceAccountUpdate`
+  - `AccountingFinanceEntryCreate`, `AccountingFinanceEntryResponse`
+
+**Исключения:** Если сущность уникальна для модуля, название модуля можно сократить или опустить
 
 **Расположение файлов:**
 - Вариант 1: Все в одном файле `app/modules/finance/schemas.py` (с префиксами)
@@ -212,21 +217,21 @@ app/
 
 1. **Entity**: `OperationalAccountEntity` в `app/entities/operational_account.py`
 2. **Domain Model**: `OperationalFinanceAccount` в `app/modules/finance/models/operational_finance_account.py`
-3. **Enum**: `OperationalAccountType` в `app/enums/operational_account_enum.py`
-4. **Schema**: `OperationalAccountCreate`, `OperationalAccountResponse` в `app/modules/finance/schemas.py`
-5. **Repository**: `OperationalAccountRepository` в `app/modules/finance/repositories/operational_account_repository.py`
-6. **Service**: `OperationalAccountService` в `app/modules/finance/services/operational_account_service.py`
-7. **Mapper**: `OperationalAccountMapper` в `app/modules/finance/mappers/operational_account_mapper.py`
+3. **Enum**: `OperationalAccountType` в `app/modules/finance/enums/operational_account_enum.py`
+4. **Schema**: `OperationalFinanceAccountCreate`, `OperationalFinanceAccountResponse` в `app/schemas/finance/operational_account.py`
+5. **Repository**: `OperationalFinanceAccountRepository` в `app/modules/finance/repositories.py`
+6. **Service**: `OperationalFinanceAccountService` в `app/modules/finance/services.py`
+7. **Mapper**: `OperationalFinanceAccountMapper` в `app/modules/finance/mappers.py`
 
 ### Бухгалтерский счет (полный стек) - в том же модуле Finance:
 
 1. **Entity**: `AccountingAccountEntity` в `app/entities/accounting_account.py`
-2. **Domain Model**: `AccountingAccount` в `app/modules/finance/models/accounting_account.py`
-3. **Enum**: `AccountingAccountType` в `app/enums/accounting_account_enum.py`
-4. **Schema**: `AccountingAccountCreate`, `AccountingAccountResponse` в `app/modules/finance/schemas.py`
-5. **Repository**: `AccountingAccountRepository` в `app/modules/finance/repositories/accounting_account_repository.py`
-6. **Service**: `AccountingAccountService` в `app/modules/finance/services/accounting_account_service.py`
-7. **Mapper**: `AccountingAccountMapper` в `app/modules/finance/mappers/accounting_account_mapper.py`
+2. **Domain Model**: `AccountingFinanceAccount` в `app/modules/finance/models/accounting_finance_account.py`
+3. **Enum**: `AccountingAccountType` в `app/modules/finance/enums/accounting_account_enum.py`
+4. **Schema**: `AccountingFinanceAccountCreate`, `AccountingFinanceAccountResponse` в `app/schemas/finance/accounting_account.py`
+5. **Repository**: `AccountingFinanceAccountRepository` в `app/modules/finance/repositories.py`
+6. **Service**: `AccountingFinanceAccountService` в `app/modules/finance/services.py`
+7. **Mapper**: `AccountingFinanceAccountMapper` в `app/modules/finance/mappers.py`
 
 ## Цель соглашений
 

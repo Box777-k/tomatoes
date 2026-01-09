@@ -33,3 +33,11 @@ class OperationalFinanceAccount:
     def deactivate(self) -> None:
         """Deactivate account."""
         self.is_active = False
+    
+    def activate(self) -> None:
+        """Activate account."""
+        self.is_active = True
+    
+    def can_be_deleted(self) -> bool:
+        """Check if account can be deleted."""
+        return not self.is_deleted

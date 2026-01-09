@@ -4,148 +4,172 @@
 Контекст: Операционный учет - Финансы
 Зависимости: Данные используются accounting модулем для генерации проводок
 
-1. Бизнес-требования
-   1.1. Проверка актуальности "Бизнес-процессы операционного уровня.md"
-   1.2. Сверка с "Операционный учёт - Финансы.txt"
-   1.3. Фиксация изменений и дополнений
+1. Бизнес-требования [ВЫПОЛНЕНО]
+   1.1. Проверка актуальности "Бизнес-процессы операционного уровня.md" [ВЫПОЛНЕНО]
+   1.2. Сверка с "Операционный учёт - Финансы.txt" [ВЫПОЛНЕНО]
+   1.3. Фиксация изменений и дополнений [ВЫПОЛНЕНО]
 
-2. Use-cases (на основе ОП-3.1 - ОП-3.12)
+2. Use-cases [ВЫПОЛНЕНО] (на основе ОП-3.1 - ОП-3.12)
    2.1. ОП-3.1: Регистрация поступления денежных средств
-   2.2. ОП-3.2: Регистрация расхода денежных средств
-   2.3. ОП-3.3: Перемещение денег между счетами
+   2.2. ОП-3.2: Регистрация расхода денежных средств (обязательно указание категории)
+   2.3. ОП-3.3: Перемещение денег между счетами (две связанные транзакции EXPENSE+INCOME)
    2.4. ОП-3.4: Отмена операции движения денег
    2.5. ОП-3.5: Создание операционного счёта
    2.6. ОП-3.6: Редактирование операционного счёта
    2.7. ОП-3.7: Деактивация операционного счёта
-   2.8. ОП-3.8: Просмотр баланса счёта
-   2.9. ОП-3.9: Просмотр истории операций по счёту
+   2.8. ОП-3.8: Просмотр баланса счёта (включая деактивированные)
+   2.9. ОП-3.9: Просмотр истории операций по счёту (включая деактивированные)
    2.10. ОП-3.10: Просмотр всех активных счетов
-   2.11. ОП-3.11: Экспорт выписки по счёту
-   2.12. ОП-3.12: Управление категориями операций
+   2.11. ОП-3.11: Экспорт выписки по счёту [НЕ РАЗРАБАТЫВАТЬ]
+   2.12. ОП-3.12: Управление категориями операций (иерархическое дерево)
 
-3. Enums (app/modules/finance/enums/)
-   3.1. OperationalAccountType - типы счетов [требует изменения]
+3. Enums [ВЫПОЛНЕНО] (app/modules/finance/enums/)
+   3.1. OperationalAccountType - типы счетов [ВЫПОЛНЕНО]
        - CASH (наличный) - касса, наличные деньги
        - NON_CASH (безналичный) - расчетный счет, электронные кошельки
-   3.2. OperationalTransactionType - типы операций (INCOME, EXPENSE, TRANSFER)
-   3.3. OperationalTransactionStatus - статусы операций (ACTIVE, CANCELLED) [существует]
-   3.4. Проверка соответствия существующих enum бизнес-требованиям
+   3.2. OperationalTransactionType - типы операций [ВЫПОЛНЕНО]
+       - INCOME (доход) - поступление денег
+       - EXPENSE (расход) - списание денег
+       - Перемещение реализуется двумя транзакциями (EXPENSE + INCOME с related_transaction_id)
+   3.3. OperationalTransactionStatus - статусы операций (ACTIVE, CANCELLED, PENDING) [ВЫПОЛНЕНО]
+   3.4. Проверка соответствия существующих enum бизнес-требованиям [ВЫПОЛНЕНО]
 
-4. Entities (app/entities/)
-   4.1. OperationalAccountEntity - операционные счета [существует, требует доработки]
-       - Добавить is_active, text_color, bg_color, sort_position
-       - Переименовать balance → start_balance
-   4.2. OperationalTransactionEntity - операционные транзакции [существует, требует доработки]
-       - Добавить account_id (ForeignKey)
-       - Добавить category_id (ForeignKey, nullable)
-       - Добавить related_transaction_id (для парных операций при переводах)
-       - Изменить transaction_type на enum
-       - Добавить status (enum)
-   4.3. OperationalCategoryEntity - категории операций [требует создания]
-       - Название, описание, визуальное оформление
-       - parent_id для древовидной структуры
-       - is_active
+4. Entities [ВЫПОЛНЕНО] (app/entities/)
+   4.1. OperationalAccountEntity - операционные счета [ВЫПОЛНЕНО]
+       - is_active, text_color, bg_color, sort_position - добавлены
+       - balance → start_balance - уже есть
+   4.2. OperationalTransactionEntity - операционные транзакции [ВЫПОЛНЕНО]
+       - account_id (ForeignKey) - есть
+       - category_id (ForeignKey, обязательно для EXPENSE, опционально для INCOME) - есть
+       - related_transaction_id (для парных операций при переводах) - есть
+       - description (описание/назначение платежа, nullable) - есть
+       - transaction_type (enum) - есть
+       - status (enum) - есть
+   4.3. OperationalCategoryEntity - категории операций [ВЫПОЛНЕНО]
+       - Название, описание - есть
+       - parent_id для древовидной структуры (nullable для корневых) - добавлен
+       - text_color, bg_color, icon (визуальное оформление) - есть
+       - sort_position (порядок сортировки) - добавлен
+       - is_active (признак активности) - добавлен
+       - is_system (системная категория, нельзя удалить) - есть
    4.4. OperationalCategoryTreeEntity - материализованное дерево категорий [опционально]
 
-5. Domain models (app/modules/finance/models/)
-   5.1. OperationalFinanceAccount [существует, требует доработки]
-       - is_available_for_transaction() [существует]
-       - deactivate() [существует]
-       - activate()
-       - can_be_deleted()
-   5.2. OperationalFinanceTransaction [существует, требует доработки]
-       - cancel() - отмена операции
-       - is_cancellable() - проверка возможности отмены
-       - is_transfer() - проверка что это перенос между счетами
-   5.3. OperationalTransactionCategory [требует создания]
-       - get_full_path() - получить путь в дереве
-       - get_children() - получить дочерние категории
-       - can_be_deleted()
-   5.4. OperationalTransactionCategoryTree [опционально]
+5. Domain models [ВЫПОЛНЕНО] (app/modules/finance/models/)
+   5.1. OperationalFinanceAccount [ВЫПОЛНЕНО]
+       - is_available_for_transaction() - есть
+       - deactivate() - есть
+       - activate() - добавлен
+       - can_be_deleted() - добавлен
+   5.2. OperationalFinanceTransaction [ВЫПОЛНЕНО]
+       - cancel() - есть с проверкой
+       - is_cancellable() - добавлен
+       - is_transfer() - добавлен (проверяет related_transaction_id)
+   5.3. OperationalTransactionCategory [ВЫПОЛНЕНО]
+       - get_full_path() - добавлен (заглушка)
+       - get_children() - добавлен (заглушка)
+       - can_be_deleted() - добавлен
+       - is_system_category() - добавлен
+   5.4. OperationalTransactionCategoryTree [ВЫПОЛНЕНО]
 
-6. Schemas (app/schemas/finance/)
-   6.1. Operational Account schemas [существуют, требуют проверки]
-       - OperationalAccountCreate
-       - OperationalAccountUpdate
-       - OperationalAccountResponse
-       - OperationalAccountListResponse
-       - OperationalAccountBalanceResponse (с текущим остатком)
-   6.2. Operational Transaction schemas [существуют, требуют доработки]
-       - OperationalTransactionCreate (для приход/расход)
-       - OperationalTransactionTransferCreate (для перемещения между счетами)
-       - OperationalTransactionUpdate
-       - OperationalTransactionResponse
-       - OperationalTransactionListResponse
-       - OperationalTransactionCancelRequest
-   6.3. Operational Category schemas [требуют создания]
-       - OperationalCategoryCreate
-       - OperationalCategoryUpdate
-       - OperationalCategoryResponse (с полным путем в дереве)
-       - OperationalCategoryTreeResponse
-   6.4. Statement/Export schemas [требуют создания]
-       - StatementExportRequest (период, формат)
-       - StatementExportResponse
+6. Schemas (app/schemas/finance/) [ВЫПОЛНЕНО]
+   6.1. Operational Finance Account schemas [ВЫПОЛНЕНО]
+       - OperationalFinanceAccountCreate (переименовано)
+       - OperationalFinanceAccountUpdate
+       - OperationalFinanceAccountResponse
+       - OperationalFinanceAccountListResponse
+       - OperationalFinanceAccountBalanceResponse (с текущим остатком)
+   6.2. Operational Finance Transaction schemas [ВЫПОЛНЕНО]
+       - OperationalFinanceTransactionIncomeCreate (категория опциональна, description обязателен)
+       - OperationalFinanceTransactionExpenseCreate (категория обязательна, description обязателен)
+       - OperationalFinanceTransactionTransferCreate (создает пару EXPENSE+INCOME с related_transaction_id)
+       - OperationalFinanceTransactionUpdate
+       - OperationalFinanceTransactionResponse (включая категорию)
+       - OperationalFinanceTransactionListResponse
+       - OperationalFinanceTransactionCancelRequest
+   6.3. Operational Transaction Category schemas [ВЫПОЛНЕНО]
+       - OperationalTransactionCategoryCreate (с parent_id, визуальным оформлением)
+       - OperationalTransactionCategoryUpdate (запрет изменения is_system)
+       - OperationalTransactionCategoryResponse
+       - OperationalTransactionCategoryWithPathResponse (с полным путем в дереве и level)
+       - OperationalTransactionCategoryTreeResponse (иерархическое дерево)
 
-7. Migrations & DB implementation (alembic/versions/)
-   7.1. Миграция: доработка operational_accounts
-       - Добавить is_active, text_color, bg_color, sort_position
-       - Переименовать balance → start_balance
-   7.2. Миграция: доработка operational_transactions
-       - Добавить account_id, category_id, related_transaction_id
-       - Изменить тип transaction_type на enum
-       - Добавить status
-   7.3. Миграция: создание operational_categories
-       - Таблица категорий с поддержкой дерева
-   7.4. Seeds: базовые счета (seeds/seed.py)
-       - 1-2 примера банковских счетов
-       - 1 касса
-   7.5. Seeds: базовые категории
-       - Основные категории доходов и расходов
+7. Migrations & DB implementation (alembic/versions/) [ВЫПОЛНЕНО частично]
+   7.1. Миграция: operational_accounts [ВЫПОЛНЕНО]
+       - Создана таблица с is_active, text_color, bg_color, sort_position, start_balance
+       - Использует enum для account_type
+   7.2. Миграция: operational_transactions [ВЫПОЛНЕНО]
+       - Создана таблица с account_id, category_id, related_transaction_id
+       - Использует enum для transaction_type (INCOME/EXPENSE)
+       - Добавлен status enum (ACTIVE/CANCELLED/PENDING)
+   7.3. Миграция: operational_categories + tree [ВЫПОЛНЕНО]
+       - Таблица operational_categories
+       - Таблица operational_category_tree (closure table)
+   7.4. Seeds: базовые счета (seeds/seed.py) [ВЫПОЛНЕНО]
+       - 2 безналичных счета (основной и инвестиционный счета)
+       - 1 кассовый счет (наличные)
+   7.5. Seeds: базовые категории [ВЫПОЛНЕНО]
+       - Системная категория "Перемещение между счетами" (is_system=true)
+       - Категории доходов: Поступления от продаж, Прочие доходы
+       - Категории расходов: Зарплата и налоги, Закупка материалов, Операционные расходы
+       - Все с иконками и цветовым оформлением
 
-8. Mappers (app/modules/finance/mappers.py)
-   8.1. OperationalFinanceAccountMapper [существует, требует проверки]
-       - to_domain(entity) → Model
-       - to_entity(model) → Entity
-   8.2. OperationalFinanceTransactionMapper [существует, требует доработки]
-       - to_domain(entity) → Model
-       - to_entity(model) → Entity
-   8.3. OperationalTransactionCategoryMapper [требует создания]
-       - to_domain(entity) → Model
-       - to_entity(model) → Entity
+8. Mappers (app/modules/finance/mappers.py) [ВЫПОЛНЕНО]
+   8.1. OperationalFinanceAccountMapper [ВЫПОЛНЕНО]
+       - to_domain(entity) → Model (все поля включая UI)
+       - to_entity(model) → Entity (с обработкой id)
+   8.2. OperationalFinanceTransactionMapper [ВЫПОЛНЕНО]
+       - to_domain(entity) → Model (все поля включая UI)
+       - to_entity(model) → Entity (с обработкой id)
+   8.3. OperationalTransactionCategoryMapper [ВЫПОЛНЕНО]
+       - to_domain(entity, parent_id) → Model (parent_id из closure table)
+       - to_entity(model) → Entity (без parent_id, управляется отдельно)
 
-9. Repositories (app/modules/finance/repositories.py)
-   9.1. OperationalFinanceAccountRepository [требует реализации]
-       - get_by_id(), get_all(), get_active()
-       - create(), update(), delete()
-       - get_with_balance() - счёт с текущим остатком
-   9.2. OperationalFinanceTransactionRepository [требует реализации]
-       - get_by_id(), get_by_account(), get_by_period()
-       - create(), update(), cancel()
-       - create_transfer() - создание парных операций
-       - get_account_balance() - расчет остатка по счёту
-   9.3. OperationalTransactionCategoryRepository [требует реализации]
-       - get_by_id(), get_all(), get_tree()
-       - create(), update(), delete()
-       - get_with_children() - категория с детьми
+9. Repositories (app/modules/finance/repositories.py) [ВЫПОЛНЕНО]
+   9.1. OperationalFinanceAccountRepository [ВЫПОЛНЕНО]
+       - get_by_id(), get_all(), get_active() - получение счетов
+       - create(), update(), delete() - CRUD операции
+       - get_with_balance(), get_account_balance() - расчет баланса (start_balance + income - expense)
+   9.2. OperationalFinanceTransactionRepository [ВЫПОЛНЕНО]
+       - get_by_id(), get_by_account(), get_by_period() - получение транзакций
+       - create(), update(), cancel() - CRUD операции
+       - create_transfer() - создание парных связанных транзакций (EXPENSE+INCOME)
+   9.3. OperationalTransactionCategoryRepository [ВЫПОЛНЕНО]
+       - get_by_id(), get_all(), get_tree() - получение категорий
+       - create(), update(), delete() - CRUD операции с closure table
+       - get_with_children() - категория с прямыми детьми
+       - _create_closure_entries() - создание записей в closure table
+   9.4. OperationalTransactionCategoryTreeRepository [ВЫПОЛНЕНО]
+       - get_ancestors(), get_descendants() - получение предков/потомков
+       - get_parent_id(), get_children_ids() - прямые связи
+       - get_root_category_ids() - корневые категории
+       - create_relationship(), delete_relationship() - управление связями
+       - move_category() - перемещение в дереве
+       - get_path(), get_level() - путь и уровень в дереве
 
-10. Services (app/modules/finance/services.py)
-    10.1. OperationalFinanceAccountService [требует реализации]
-        - create_account(), update_account()
-        - activate_account(), deactivate_account()
-        - get_account_with_balance()
-        - export_statement()
-    10.2. OperationalFinanceTransactionService [требует реализации]
-        - create_income(), create_expense()
-        - create_transfer() - создает две связанные операции
-        - cancel_transaction()
-        - get_transactions_by_account()
-    10.3. OperationalTransactionCategoryService [требует реализации]
-        - manage_categories()
-        - get_category_tree()
-    10.4. FinanceBalanceService [требует реализации]
-        - calculate_account_balance() - на дату
-        - calculate_all_balances()
-        - get_balance_history() - за период
+10. Services (app/modules/finance/services/*.py) [ВЫПОЛНЕНО]
+    10.1. OperationalFinanceAccountService [ВЫПОЛНЕНО]
+        - create_account(), update_account() - с валидацией бизнес-правил
+        - activate_account(), deactivate_account() - управление статусом
+        - get_account_with_balance() - с балансом (включая деактивированные)
+        - get_account_history() - история транзакций
+    10.2. OperationalFinanceTransactionService [ВЫПОЛНЕНО]
+        - create_income() - категория опциональна, валидация счета
+        - create_expense() - категория обязательна, валидация счета
+        - create_transfer() - создает пару EXPENSE+INCOME с комментариями и системной категорией
+        - cancel_transaction() - отменяет обе транзакции при переводе
+        - _generate_transaction_number() - формат TRN-YYYYMMDD-NNNN
+    10.3. OperationalTransactionCategoryService [ВЫПОЛНЕНО]
+        - create_category(), update_category() - с валидацией системных категорий
+        - delete_category() - проверка is_system, транзакций, детей
+        - get_category_tree() - иерархическое дерево с рекурсией
+        - get_system_transfer_category() - системная категория перемещения
+        - move_category() - перемещение с проверкой циклических ссылок
+    10.4. FinanceBalanceService [ВЫПОЛНЕНО]
+        - calculate_account_balance() - баланс на дату
+        - calculate_all_balances() - балансы всех счетов
+        - get_balance_history() - история балансов с интервалом
+        - get_account_summary() - сводка по счету за период
+        - get_multi_account_summary() - сводка по нескольким счетам
 
 11. Web controllers (app/web/controllers/)
     11.1. OperationalAccountWebController [требует создания]
@@ -187,9 +211,8 @@
         - GET /accounts/{id} - детали
         - PUT /accounts/{id} - обновление
         - DELETE /accounts/{id} - деактивация
-        - GET /accounts/{id}/balance - баланс
-        - GET /accounts/{id}/transactions - операции по счету
-        - POST /accounts/{id}/export - экспорт выписки
+        - GET /accounts/{id}/balance - баланс (включая деактивированные)
+        - GET /accounts/{id}/transactions - операции по счету (включая деактивированные)
     13.2. /api/v1/finance/transactions [требует создания]
         - GET /transactions - список с фильтрами
         - POST /transactions/income - поступление

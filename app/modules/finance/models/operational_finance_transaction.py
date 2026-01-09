@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, date
 from decimal import Decimal
-from app.modules.finance import OperationalTransactionType, OperationalTransactionStatus
+from app.modules.finance.enums import OperationalTransactionType, OperationalTransactionStatus
 
 
 @dataclass
@@ -22,8 +22,6 @@ class OperationalFinanceTransaction:
     account_id: int
     category_id: int | None
     related_transaction_id: int | None
-    order_id: int | None
-    movement_id: int | None
     created_at: datetime
     updated_at: datetime
     is_deleted: bool
@@ -33,12 +31,18 @@ class OperationalFinanceTransaction:
     
     def cancel(self) -> None:
         """Cancel transaction."""
+        if not self.is_cancellable():
+            raise ValueError("Transaction cannot be cancelled")
         self.status = OperationalTransactionStatus.CANCELLED
+    
+    def is_cancellable(self) -> bool:
+        """Check if transaction can be cancelled."""
+        return self.status == OperationalTransactionStatus.ACTIVE and not self.is_deleted
     
     def is_cancelled(self) -> bool:
         """Check if transaction is cancelled."""
         return self.status == OperationalTransactionStatus.CANCELLED
     
     def is_transfer(self) -> bool:
-        """Check if transaction is part of a transfer."""
+        """Check if transaction is part of a transfer between accounts."""
         return self.related_transaction_id is not None

@@ -6,6 +6,5 @@ from enum import Enum
 class OperationalAccountType(str, Enum):
     """Тип операционного счета."""
     
-    BANK = "Банковский счет"
-    CASH = "Касса"
-    OTHER = "Прочие счета"
+    CASH = "cash"
+    NON_CASH = "non_cash"

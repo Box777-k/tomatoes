@@ -18,10 +18,10 @@ from .movement import MovementEntity
 from .movement_item import MovementItemEntity
 
 # Operational finance entities
-from .operational_transaction import OperationalTransactionEntity
-from .operational_account import OperationalAccountEntity
-from .operational_category import OperationalCategoryEntity
-from .operational_category_tree import OperationalCategoryTreeEntity
+from app.modules.finance.entities.operational_transaction import OperationalTransactionEntity
+from app.modules.finance.entities.operational_account import OperationalAccountEntity
+from app.modules.finance.entities.operational_category import OperationalCategoryEntity
+from app.modules.finance.entities.operational_category_tree import OperationalCategoryTreeEntity
 
 __all__ = [
     "BaseEntity",

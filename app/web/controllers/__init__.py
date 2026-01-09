@@ -1,0 +1,2 @@
+"""Web controllers for SSR."""
+

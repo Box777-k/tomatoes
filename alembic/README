@@ -1,0 +1,54 @@
+# Alembic Migrations
+
+## Создание миграции
+
+```bash
+uv run alembic revision --autogenerate -m "description"
+```
+
+## Применение миграций
+
+```bash
+# Применить все миграции
+uv run alembic upgrade head
+
+# Откатить одну миграцию
+uv run alembic downgrade -1
+
+# Показать текущую версию
+uv run alembic current
+
+# Показать историю миграций
+uv run alembic history
+```
+
+## Структура
+
+- `env.py` - настроено для автоматического импорта всех entities из `app/entities/`
+- `versions/` - папка с файлами миграций
+- База данных настроена в `app/config.py` через переменную `DATABASE_URL`
+
+## Настройка базы данных
+
+1. Создайте файл `.env` в корне проекта
+2. Укажите `DATABASE_URL`:
+
+```
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/dbname
+```
+
+3. Создайте базу данных PostgreSQL:
+
+```sql
+CREATE DATABASE tomatoes_db;
+CREATE USER tomatoes_user WITH PASSWORD 'tomatoes_pass';
+GRANT ALL PRIVILEGES ON DATABASE tomatoes_db TO tomatoes_user;
+```
+
+## Entities
+
+Все entities автоматически импортируются из `app/entities/`:
+- Auth: User, Role, Permission + связующие таблицы
+- Business: Product, ProductionOrder, Warehouse, WarehouseItem, Movement, MovementItem, Transaction, Account
+
+При добавлении новой entity, добавьте импорт в `alembic/env.py`.

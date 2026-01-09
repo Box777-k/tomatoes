@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.first_name or user.email }} - VeggieERP{% endblock %}
+
+{% block content %}
+<div>
+    <div class="mb-8">
+        <div class="flex items-center gap-3 mb-2">
+            <a href="/web/users" class="text-sm text-neutral-600 hover:text-neutral-900">← Назад к списку</a>
+        </div>
+        <h1 class="text-2xl font-bold text-neutral-900 mb-2">{{ user.first_name or '' }} {{ user.last_name or user.email }}</h1>
+        <p class="text-sm text-neutral-600">{{ user.email }}</p>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="border-b border-neutral-200 mb-6">
+        <nav class="flex gap-6">
+            <a href="/web/users/{{ user.id }}" class="border-b-2 border-primary-500 pb-3 text-sm font-semibold text-primary-600">
+                Профиль
+            </a>
+            <a href="/web/users/{{ user.id }}/permissions" class="border-b-2 border-transparent pb-3 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:border-neutral-300 transition-colors">
+                Права доступа
+            </a>
+            <a href="/web/users/{{ user.id }}/activity" class="border-b-2 border-transparent pb-3 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:border-neutral-300 transition-colors">
+                Активность
+            </a>
+        </nav>
+    </div>
+    
+    <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+        <dl class="divide-y divide-neutral-150">
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Email</dt>
+                <dd class="mt-1 text-sm text-neutral-900 sm:col-span-2 sm:mt-0">{{ user.email }}</dd>
+            </div>
+            
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Полное имя</dt>
+                <dd class="mt-1 text-sm text-neutral-900 sm:col-span-2 sm:mt-0">
+                    {{ user.first_name or '' }} {{ user.last_name or '' }}
+                </dd>
+            </div>
+            
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Телефон</dt>
+                <dd class="mt-1 text-sm text-neutral-900 sm:col-span-2 sm:mt-0">
+                    {{ user.phone or '-' }}
+                </dd>
+            </div>
+            
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Статус</dt>
+                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+                    <div class="flex gap-3 items-center">
+                        {% if user.is_active %}
+                            <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">Активен</span>
+                        {% else %}
+                            <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">Неактивен</span>
+                        {% endif %}
+                        {% if user.is_verified %}
+                            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">Подтвержден</span>
+                        {% endif %}
+                    </div>
+                </dd>
+            </div>
+            
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Роль</dt>
+                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+                    {% if user.is_superuser %}
+                        <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">Администратор</span>
+                    {% else %}
+                        <span class="text-neutral-900">Пользователь</span>
+                    {% endif %}
+                </dd>
+            </div>
+            
+            <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-6">
+                <dt class="text-sm font-medium text-neutral-600">Создан</dt>
+                <dd class="mt-1 text-sm text-neutral-900 sm:col-span-2 sm:mt-0">
+                    {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                </dd>
+            </div>
+        </dl>
+    </div>
+    
+    <div class="flex gap-4 mt-6">
+        <a href="/web/users/{{ user.id }}/edit" 
+           class="inline-flex items-center justify-center rounded-lg bg-primary-500 px-5 h-11 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">
+            Редактировать
+        </a>
+        <form method="post" action="/web/users/{{ user.id }}/delete" 
+              class="inline" onsubmit="return confirm('Вы уверены?')">
+            <button type="submit" 
+                    class="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-5 h-11 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                Удалить
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Управление пользователями - VeggieERP{% endblock %}
+
+{% block content %}
+<div>
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-neutral-900 mb-2">Управление пользователями</h1>
+        <p class="text-sm text-neutral-600">Управление сотрудниками и правами доступа</p>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="border-b border-neutral-200 mb-6">
+        <nav class="flex gap-6">
+            <a href="/web/users" class="border-b-2 border-primary-500 pb-3 text-sm font-semibold text-primary-600">
+                Все пользователи
+            </a>
+            <a href="/web/users?filter=active" class="border-b-2 border-transparent pb-3 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:border-neutral-300 transition-colors">
+                Активные
+            </a>
+            <a href="/web/users?filter=inactive" class="border-b-2 border-transparent pb-3 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:border-neutral-300 transition-colors">
+                Неактивные
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="flex items-center justify-between gap-4 mb-6">
+        <div class="flex-1 relative max-w-md">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" 
+                   placeholder="Поиск по именам, email..." 
+                   class="w-full h-11 pl-12 pr-4 rounded-lg border border-neutral-200 bg-white text-sm text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors">
+        </div>
+        <div class="flex items-center gap-3">
+            <button type="button" 
+                    class="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                </svg>
+                Фильтры
+            </button>
+            <a href="/web/users/create" 
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 px-5 h-11 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Добавить посев
+            </a>
+        </div>
+    </div>
+    
+    <div>
+        <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-neutral-150">
+                    <thead class="bg-neutral-50">
+                        <tr>
+                            <th scope="col" class="py-3 pl-6 pr-4 text-left text-xs font-medium text-neutral-600">Email</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-neutral-600">Имя</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-neutral-600">Телефон</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-neutral-600">Статус</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-neutral-600">Роль</th>
+                            <th scope="col" class="relative py-3 pl-4 pr-6">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-150 bg-white">
+                        {% for user in users %}
+                        <tr class="hover:bg-neutral-50 transition-colors">
+                            <td class="whitespace-nowrap py-4 pl-6 pr-4 text-sm">
+                                <a href="/web/users/{{ user.id }}" class="font-medium text-neutral-900 hover:text-primary-500 transition-colors">
+                                    {{ user.email }}
+                                </a>
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-neutral-700">
+                                {{ user.first_name or '' }} {{ user.last_name or '' }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-neutral-700">
+                                {{ user.phone or '-' }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm">
+                                {% if user.is_active %}
+                                    <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">Активен</span>
+                                {% else %}
+                                    <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">Неактивен</span>
+                                {% endif %}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-neutral-700">
+                                {% if user.is_superuser %}
+                                    <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">Админ</span>
+                                {% else %}
+                                    <span class="text-neutral-600">Пользователь</span>
+                                {% endif %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-4 pl-4 pr-6 text-right text-sm font-medium">
+                                <a href="/web/users/{{ user.id }}/edit" class="text-primary-500 hover:text-primary-600 mr-4 font-medium">Редактировать</a>
+                                <form method="post" action="/web/users/{{ user.id }}/delete" 
+                                      class="inline" onsubmit="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
+                                    <button type="submit" class="text-red-600 hover:text-red-700 font-medium">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

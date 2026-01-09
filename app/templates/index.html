@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tomatoes ERP{% endblock %}
+
+{% block content %}
+<div>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+    
+    <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Production Card -->
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Production Orders</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">0</dd>
+            <div class="mt-4">
+                <a href="/web/production/orders" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    View all →
+                </a>
+            </div>
+        </div>
+
+        <!-- Warehouse Card -->
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Warehouses</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">0</dd>
+            <div class="mt-4">
+                <a href="/web/warehouse/warehouses" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    View all →
+                </a>
+            </div>
+        </div>
+
+        <!-- Movements Card -->
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Active Movements</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">0</dd>
+            <div class="mt-4">
+                <a href="/web/logistics/movements" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    View all →
+                </a>
+            </div>
+        </div>
+
+        <!-- Finance Card -->
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Total Balance</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">$0</dd>
+            <div class="mt-4">
+                <a href="/web/finance/accounts" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    View accounts →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-8">
+        <h2 class="text-lg font-medium text-gray-900">Recent Activity</h2>
+        <div class="mt-4 overflow-hidden bg-white shadow sm:rounded-md">
+            <ul role="list" class="divide-y divide-gray-200">
+                <li class="px-4 py-4 sm:px-6">
+                    <p class="text-sm text-gray-500">No recent activity</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,57 @@
+{% macro render_field(field_name, field_label, field_type='text', value='', required=True, options=None) %}
+<div class="sm:col-span-4">
+    <label for="{{ field_name }}" class="block text-sm font-medium leading-6 text-gray-900">{{ field_label }}</label>
+    <div class="mt-2">
+        {% if field_type == 'select' %}
+        <select id="{{ field_name }}" name="{{ field_name }}" 
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                {% if required %}required{% endif %}>
+            <option value="">Select...</option>
+            {% for option in options %}
+            <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>
+                {{ option.label }}
+            </option>
+            {% endfor %}
+        </select>
+        {% elif field_type == 'textarea' %}
+        <textarea id="{{ field_name }}" name="{{ field_name }}" rows="3" 
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  {% if required %}required{% endif %}>{{ value }}</textarea>
+        {% else %}
+        <input type="{{ field_type }}" name="{{ field_name }}" id="{{ field_name }}" value="{{ value }}"
+               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+               {% if required %}required{% endif %}>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_form(fields, action_url, submit_label='Save', cancel_url='') %}
+<form method="POST" action="{{ action_url }}" class="space-y-6">
+    <div class="border-b border-gray-900/10 pb-12">
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            {% for field in fields %}
+            {{ render_field(
+                field.name, 
+                field.label, 
+                field.type|default('text'), 
+                field.value|default(''),
+                field.required|default(True),
+                field.options|default(None)
+            ) }}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-x-6">
+        {% if cancel_url %}
+        <a href="{{ cancel_url }}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+        {% endif %}
+        <button type="submit" 
+                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            {{ submit_label }}
+        </button>
+    </div>
+</form>
+{% endmacro %}
+

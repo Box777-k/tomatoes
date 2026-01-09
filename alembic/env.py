@@ -27,8 +27,10 @@ from app.entities import (
     WarehouseItemEntity,
     MovementEntity,
     MovementItemEntity,
-    TransactionEntity,
-    AccountEntity,
+    OperationalTransactionEntity,
+    OperationalAccountEntity,
+    OperationalCategoryEntity,
+    OperationalCategoryTreeEntity,
 )
 
 # this is the Alembic Config object, which provides
